@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+  <head>
+    <meta charset = 'UTF-8'>
+		<link rel = 'stylesheet' href = 'main.css'>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+
+		<style>
+
+
+      #tooltip.hidden {
+          display: none;
+        }
+
+      #tooltip {
+           position: absolute;
+           width: 100px;
+           height: 25px;
+           padding: 5px;
+           background-color: white;
+           border: solid white 1px;
+           z-index:10;
+           opacity: 0.7;
+
+         }
+       /* Add CSS classes for p to make the font-size 12 px */
+
+
+       .button1 {
+       background-color: white;
+       border: solid #fbb4ae 2.5px;
+       color: black;
+       padding: 5px 20px;
+       text-align: center;
+       text-decoration: none;
+       display: inline-block;
+       font-size: 12px;
+     }
+       .button2 {
+       background-color: white;
+       border:solid #b3cde3 2.5px;
+       color: black;
+       padding: 5px 20px;
+       text-align: center;
+       text-decoration: none;
+       display: inline-block;
+       font-size: 12px;
+     }
+       .button3 {
+       background-color: white;
+       border: solid #ccebc5 2.5px;
+       color: black;
+       padding: 5px 20px;
+       text-align: center;
+       text-decoration: none;
+       display: inline-block;
+       font-size: 12px;
+     }
+     .button4 {
+     background-color: white;
+     border: solid #decbe4 2.5px;
+     color: black;
+     padding: 5px 20px;
+     text-align: center;
+     text-decoration: none;
+     display: inline-block;
+     font-size: 12px;
+    }
+    .button5 {
+    background-color: white;
+    border: solid #fed9a6 2.5px;
+    color: black;
+    padding: 5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    }
+
+    .button1:hover {
+      background-color: #fbb4ae;
+      border: solid white 2.5px;
+      color: black;
+      padding: 5px 20px;
+    }
+    .button2:hover {
+      background-color: #b3cde3;
+      border: solid white 2.5px;
+      color: black;
+      padding: 5px 20px;
+    }
+    .button3:hover {
+      background-color: #ccebc5;
+      border: solid white 2.5px;
+      color: black;
+      padding: 5px 20px;
+    }
+    .button4:hover {
+      background-color: #decbe4;
+      border: solid  white 2.5px;
+      color: black;
+      padding: 5px 20px;
+    }
+    .button5:hover {
+      background-color: #fed9a6;
+      border: solid white 2.5px;
+      color: black;
+      padding: 5px 20px;
+    }
+
+		</style>
+
+  </head>
+
+	<body>
+
+
+		<div id = 'Projects'>
+        <!-- Add a div element for tooltip -->
+        <div id="tooltip" class="hidden">
+          <p><span id="value">chart</span></p>
+        </div>
+
+
+        <!-- Add buttons for each of the four neighborhoods -->
+        <div>
+          <!-- <div style=" margin-left:0px; margin-right:0px; margin-bottom: 0px"> -->
+          <!-- <p ><span><b> Chart-A</b> &nbsp;&nbsp; Regions with different taxi travel patterns. Click the five types and see their land-use structures!</span></p> -->
+          <input style=" margin-left:0px" type="button" class="button1" id="t1" value="Type 1" >
+          <input style=" margin-left:75px" type="button" class="button2" id="t2" value="Type 2">
+          <input style=" margin-left:75px" type="button" class="button3" id="t3" value="Type 3">
+          <input style=" margin-left:75px" type="button" class="button4" id="t4" value="Type 4">
+          <input style=" margin-left:75px" type="button" class="button5" id="t5" value="Type 5">
+        </div>
+
+
+      <div>
+      <!-- <div class="row"> -->
+        <!-- <div class="col-4">
+            <div style=" margin-left:400px; margin-right:-180px;  margin-top: 250px;margin-bottom: 100px">
+                <p style = 'line-height: 1.2;'><span>Type1: Tracts with more taxi pick-ups in the morning and more drop-offs in the evening. </span></p>
+                <p style = 'line-height: 1.2;'><span>Type2: Tracts with more taxi pick-ups both in the morning and evening. </span></p>
+                <p style = 'line-height: 1.2;'><span>Type3: Tracts with more taxi drop-offs both in the morning and evening. </span></p>
+                <p style = 'line-height: 1.2;'><span>Type4: Tracts with more taxi drop-offs in the morning and more pick-ups in the evening. </span></p>
+                <p style = 'line-height: 1.2;'><span>Type5: Tracts with an equilibrium taxi trips . </span></p>
+            </div>
+        </div> -->
+
+        <!-- <div class="col-8"> -->
+        <div>
+          <!-- <div style=" margin-left:200px; margin-right:0px;  margin-top: 0px;margin-bottom: 200px"> -->
+            <div id="main">
+            </div>
+        </div>
+
+      <!-- </div> -->
+
+
+		</div>
+
+
+		<!-- <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> -->
+
+		<script>
+
+      var t1 = [["Residential", 35.98], ["Commercial", 20.18], ["Industrial", 8.09],["Transportation", 12.70], ["Public_Facilities", 6.81], ["Open_Space", 14.05], ["Vacant_Land", 2.20]]
+      var t2 = [["Residential", 19.59], ["Commercial", 8.34],  ["Industrial", 1.76],["Transportation", 50.99], ["Public_Facilities", 4.14], ["Open_Space", 13.64], ["Vacant_Land", 1.55]]
+      var t3 = [["Residential", 43.98], ["Commercial", 13.09], ["Industrial", 8.33],["Transportation", 18.24], ["Public_Facilities", 6.82], ["Open_Space", 6.51],  ["Vacant_Land", 3.03]]
+      var t4 = [["Residential", 26.72], ["Commercial", 42.16],  ["Industrial", 2.93],["Transportation", 9.16], ["Public_Facilities", 9.05], ["Open_Space", 6.83],  ["Vacant_Land", 3.15]]
+      var t5 = [["Residential", 25.57], ["Commercial", 23.11],  ["Industrial", 4.8],["Transportation", 13.65], ["Public_Facilities", 13.43], ["Open_Space", 14.29], ["Vacant_Land", 4.16]]
+
+
+
+    	// Define height and width variables (height of 720, width of 1200)
+
+
+      	var height = 550;
+      	var width = 800;
+      	var barWidth = 20;
+      	var h_spacing = 15;
+
+
+      	// Add an SVG element
+
+      	var svg = d3.select("div#main")
+      				.append("svg")
+         			.attr("width", width)
+         			.attr("height", height);
+
+
+      	// Bind data to rectangles to create the bar chart. Add mouseovers for the hovers.
+
+      	// Initialize data and neighborhood name with roslindale
+      	var data = t2;
+      	var pattern_name = "t2";
+        //var color_Column = ['Residential_Buildings','Commercial_and_Mixed','Industrial_and_Manufacturing','Transportation_and_Utility','Public_Facilities_and_Institutions','Open_Space_and_Outdoor_Recreation','Vacant_Land']
+        var color = d3.scaleOrdinal(d3.schemeCategory10).range(['#f9e54e', '#b11616', '#bf9675', '#b7b4cf', '#7ebae2', '#3f8d44', '#f1efef']);
+      	svg.selectAll("rect")
+      		   	.data(data)
+      		   	.enter()
+      		   	.append("rect")
+
+      		   	.attr("x", function(d, i) {return  20 + i*(barWidth+80) +h_spacing;
+      									})
+      		   	.attr( "y", d => 500-(d[1]*9))
+      		   	.attr("width", barWidth)
+      		   	.attr( "height", d => (d[1]*9)) // Set height of rectangle to data value
+              .attr("fill", function (d){ return color(d[0]); })
+      		   	.on("mouseover", function(d) {
+      		   					 d3.select("#tooltip")
+      		   					 .style("left", d3.event.pageX + "px")
+      		   					 .style("top", d3.event.pageY + "px")
+      		   					 .select("#value")
+      		   					 .html("<a>" + d[0] +": "+ String(d[1]) +"% "+"</a>")
+      		   			 d3.select("#tooltip").classed("hidden", false);
+      		   			 })
+
+      		   			 .on("mouseout", function() {
+      		   				 d3.select("#tooltip").classed("hidden", true);
+      		   			 });
+
+
+          svg.append("text")
+          .attr("font-family", "Nunito, sans-serif")
+          .attr("font-size", "14px")
+        	.attr("class", "y label")
+        	.attr("text-anchor", "end")
+        	.text("Land Use Proportions")
+        	.attr("transform", "translate(15, 200),rotate(-90)");//
+
+          //x-axis label
+          svg.selectAll(".text")
+          	 .data(data)
+          	 .enter()
+          	 .append("text")
+             .attr("font-family","Nunito, sans-serif")
+             .attr("font-size" ,"14px")
+          	 .attr("x", function(d, i) {return 70 +  i*(barWidth+80) +h_spacing/2;
+        							})
+          	 .attr("y", 510)
+          	 .attr("dy", ".75em")
+          	 .attr("text-anchor", "end")
+          	 .attr("class", "label")
+
+          	 .text(function(d) {return d[0].replaceAll("_", " ");})
+             // .attr("transform", "translate(-10, 440),rotate(-90)");//
+             // .attr("y", function(d, i) {return 20 +  i*(barWidth+200) +h_spacing/2;
+          	 // .attr("transform", " translate(0, 0),rotate(-0)");
+
+             function bar_plot(data){
+             svg.selectAll("rect")
+             .data(data)
+             .transition().duration(1200)
+             .attr( "height", function(d) {
+               return d[1]*9;
+               })
+             .attr( "y", function(d) {
+               return 500 - (d[1]*9)
+               })
+           }
+
+           // Click to update data and neighborhood name and then execute plot to update viz:
+          	d3.select("input#t1")
+          		.on("click", function() {
+          			data = t1
+          			pattern_name = "t1"
+          			bar_plot(data)
+          			//map_plot(data)
+          		})
+
+              d3.select("input#t2")
+          		.on("click", function() {
+          			data = t2
+          			pattern_name = "t2"
+          			bar_plot(data)
+          			//map_plot(data)
+          		})
+
+          	d3.select("input#t3")
+          		.on("click", function() {
+          			data = t3
+          			pattern_name = "t3"
+          			bar_plot(data)
+          			//map_plot(data)
+          		})
+
+          	d3.select("input#t4")
+          		.on("click", function() {
+          			data = t4
+          			pattern_name = "t4"
+          			bar_plot(data)
+          			//map_plot(data)
+          		})
+
+           d3.select("input#t5")
+          		.on("click", function() {
+          			data = t5
+          			pattern_name = "t5"
+          			bar_plot(data)
+          			//map_plot(data)
+          		})
+
+    			var mybutton = document.getElementById("myBtn");
+
+    			window.onscroll = function() {scrollFunction()};
+
+    			function scrollFunction() {
+    				if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    					mybutton.style.display = "block";
+    				} else {
+    					mybutton.style.display = "none";
+    				}
+    			}
+
+    			function topFunction() {
+    				document.body.scrollTop = 0;
+    				document.documentElement.scrollTop = 0;
+    			}
+
+
+
+
+		</script>
+
+ 	</body>
+</html>
